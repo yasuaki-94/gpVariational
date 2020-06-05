@@ -6,11 +6,16 @@ import os
 from functools import reduce
 from datetime import datetime
 
+
+#Compute the value of squared exponential kernel func given the vector
+#of difference and hyperparams (sigmaSqf, lscale)
 def sqExpKernel(diff, sigmaSqf, lscale):
     sqNorm = (np.linalg.norm(diff))**2
     expTerm = math.exp(-sqNorm/(2*lscale))
     return sigmaSqf * expTerm
 
+
+#Compute the covariance matrix based on the squared exp kernel
 def sqExpKernelCov(X, sigmaSqf, lscale):
     N = X.shape[0]
     d = X.shape[1]
@@ -29,7 +34,7 @@ def sqExpKernelCov(X, sigmaSqf, lscale):
 
     return K
 
-
+#Compute the cross covariance matrix based on the squared exp kernel
 def sqExpKernelCrossCov(X1, X2, sigmaSqf, lscale):
     N = X1.shape[0]
     M = X2.shape[0]
@@ -50,6 +55,7 @@ def sqExpKernelCrossCov(X1, X2, sigmaSqf, lscale):
     return K
 
 
+#Compute the variational parameters for VGP given data and the hyperparams
 def paramsEst(X, y, Xm, sigmaSqf, lscale, varErr, printElapsedTime):
     start = datetime.now()
 
@@ -75,8 +81,9 @@ def paramsEst(X, y, Xm, sigmaSqf, lscale, varErr, printElapsedTime):
     if printElapsedTime:
         print("Elapsed Time (in Seconds): " + str(timeDiff.seconds))
 
-    return mu, A
+    return mu, A, timeDiff.seconds
 
+#Compute the mean of the posterior GP at given points (X)
 def predictMean(X, Xm, mu, y, sigmaSqf, lscale, printErr, \
                 scalingParams={"mean": 0, "sd":1}):
     M = Xm.shape[0]
